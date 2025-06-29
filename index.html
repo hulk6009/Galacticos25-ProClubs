@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GALACTICOS FC Club Squad Stats</title>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1a1a2e;
+      --secondary: #16213e;
+      --accent: #0f3460;
+      --highlight: #e94560;
+      --text: #f1f1f1;
+      --text-secondary: #b8b8b8;
+    }
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: var(--text);
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    header {
+      text-align: center;
+      padding: 30px 0;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      margin-bottom: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
+      opacity: 0.3;
+      z-index: -1;
+    }
+    
+    h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    
+    h1 span {
+      color: var(--highlight);
+    }
+    
+    .subtitle {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      margin-top: 10px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    
+    th {
+      background-color: var(--accent);
+      color: white;
+      font-weight: 600;
+      padding: 12px 8px;
+      text-align: left;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+    }
+    
+    td {
+      padding: 10px 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.85rem;
+    }
+    
+    tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    tr:hover {
+      background-color: rgba(233, 69, 96, 0.1);
+    }
+    
+    .dataTables_wrapper {
+      background: rgba(15, 52, 96, 0.2);
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 20px;
+    }
+    
+    .dataTables_info, .dataTables_length, .dataTables_filter {
+      color: var(--text-secondary);
+      padding: 8px 0;
+      font-size: 0.9rem;
+    }
+    
+    .dataTables_filter input {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 5px 8px;
+      border-radius: 4px;
+      margin-left: 8px;
+      font-size: 0.9rem;
+    }
+    
+    /* Highlight important columns */
+    td.goal-contributions {
+      font-weight: 600;
+      color: var(--highlight);
+    }
+    
+    td.ratio {
+      font-weight: 500;
+    }
+    
+    /* Column width adjustments */
+    th:nth-child(1), td:nth-child(1) { width: 12%; } /* Player */
+    th:nth-child(2), td:nth-child(2) { width: 6%; }  /* Games */
+    th:nth-child(3), td:nth-child(3) { width: 6%; }  /* Goals */
+    th:nth-child(4), td:nth-child(4) { width: 7%; }  /* Assists */
+    th:nth-child(5), td:nth-child(5) { width: 8%; }  /* Goal Contributions */
+    th:nth-child(6), td:nth-child(6) { width: 8%; }  /* Goal Ratio */
+    th:nth-child(7), td:nth-child(7) { width: 8%; }  /* Assist Ratio */
+    th:nth-child(8), td:nth-child(8) { width: 7%; }  /* Win % */
+    th:nth-child(9), td:nth-child(9) { width: 7%; }  /* Passes */
+    th:nth-child(10), td:nth-child(10) { width: 7%; } /* Pass % */
+    th:nth-child(11), td:nth-child(11) { width: 8%; } /* Shots on Target % */
+    
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .container {
+        padding: 10px;
+      }
+      
+      th, td {
+        padding: 8px 6px;
+        font-size: 0.75rem;
+      }
+      
+      .dataTables_wrapper {
+        padding: 10px;
+      }
+      
+      /* Hide less important columns on mobile */
+      .hide-on-mobile {
+        display: none;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      header {
+        padding: 20px 0;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+      
+      .subtitle {
+        font-size: 0.8rem;
+      }
+      
+      th {
+        font-size: 0.7rem;
+        padding: 6px 4px;
+      }
+      
+      td {
+        padding: 6px 4px;
+        font-size: 0.7rem;
+      }
+      
+      .dataTables_wrapper .dataTables_filter {
+        float: none;
+        text-align: left;
+        margin-top: 8px;
+      }
+      
+      .dataTables_wrapper .dataTables_filter input {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><span>GALACTICOS</span> FC</h1>
+      <div class="subtitle">Club Squad Statistics 2025</div>
+    </header>
+    
+    <table id="squadTable" class="display">
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>Games</th>
+          <th>Goals</th>
+          <th>Assists</th>
+          <th>G+A</th>
+          <th>Goal Ratio</th>
+          <th>Assist Ratio</th>
+          <th>Win %</th>
+          <th class="hide-on-mobile">Passes</th>
+          <th class="hide-on-mobile">Pass %</th>
+          <th>SOT %</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script>
+    const playerData = [
+      ["Akinkunmi-4", 58, 28, 23, 51, 0.48, 0.40, 43, 759, 80, 32],
+      ["BabyfaceBig", 49, 24, 17, 41, 0.49, 0.35, 46, 701, 80, 24],
+      ["Corllynz", 53, 20, 19, 39, 0.38, 0.36, 45, 538, 75, 30],
+      ["Crespo17__", 103, 55, 77, 132, 0.53, 0.75, 46, 2339, 81, 27],
+      ["DPeace191", 23, 15, 4, 19, 0.65, 0.17, 43, 157, 84, 48],
+      ["Davitovich123", 84, 20, 13, 33, 0.24, 0.15, 45, 1499, 82, 27],
+      ["Ekkyboss", 23, 1, 0, 1, 0.04, 0.00, 34, 227, 87, 20],
+      ["Mayour10", 39, 14, 4, 18, 0.36, 0.10, 56, 398, 77, 37],
+      ["Real_BlueJosh", 15, 2, 2, 4, 0.13, 0.13, 20, 74, 76, 33],
+      ["adexzy14", 31, 21, 7, 28, 0.68, 0.23, 38, 379, 79, 42],
+      ["josh_mb10", 5, 1, 2, 3, 0.20, 0.40, 20, 64, 79, 12],
+      ["olamix19", 53, 11, 14, 25, 0.21, 0.26, 43, 654, 78, 31],
+      ["tosynr", 97, 59, 37, 96, 0.61, 0.38, 46, 1023, 80, 32],
+    ];
+
+    // Format the data for display (convert ratios to percentages)
+    const formattedData = playerData.map(player => {
+      return [
+        player[0], // Player
+        player[1], // Games
+        player[2], // Goals
+        player[3], // Assists
+        player[4], // Goal Contributions
+        (player[5] * 100).toFixed(1) + '%', // Goal Ratio
+        (player[6] * 100).toFixed(1) + '%', // Assist Ratio
+        player[7], // Win %
+        player[8], // Passes
+        player[9], // Pass %
+        player[10] // Shots on Target %
+      ];
+    });
+
+    $(document).ready(function () {
+      $('#squadTable').DataTable({
+        data: formattedData,
+        order: [[4, 'desc']], // Sort by Goal Contributions (descending)
+        paging: false, // Disable pagination to show all players
+        searching: true, // Keep search functionality
+        info: true, // Show "Showing X of Y entries" info
+        responsive: true,
+        dom: '<"top"f>rt<"bottom"i>',
+        language: {
+          search: "_INPUT_",
+          searchPlaceholder: "Search players...",
+          info: "Showing all _TOTAL_ players",
+          infoEmpty: "No players found",
+          infoFiltered: "(filtered from _MAX_ total players)",
+        },
+        createdRow: function(row, data, dataIndex) {
+          // Highlight important columns
+          $('td:eq(4)', row).addClass('goal-contributions'); // G+A column
+          $('td:eq(5), td:eq(6)', row).addClass('ratio'); // Ratio columns
+          
+          // Hide less important columns on mobile
+          if ($(window).width() <= 768) {
+            $(row).find('.hide-on-mobile').hide();
+          }
+        },
+        columnDefs: [
+          { targets: [8, 9], className: 'hide-on-mobile' } // Hide Passes and Pass% on mobile
+        ]
+      });
+      
+      // Handle window resize to show/hide columns
+      $(window).resize(function() {
+        if ($(window).width() <= 768) {
+          $('.hide-on-mobile').hide();
+        } else {
+          $('.hide-on-mobile').show();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
